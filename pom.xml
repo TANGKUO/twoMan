@@ -21,26 +21,23 @@
 
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/spy/memcached -->
-		<!-- <dependency>
-			<groupId>spy</groupId>
-			<artifactId>memcached</artifactId>
-			<version>>2.4rc1</version>
-		</dependency> -->
-	
+		<!-- <dependency> <groupId>spy</groupId> <artifactId>memcached</artifactId> 
+			<version>>2.4rc1</version> </dependency> -->
+
 		<!-- https://mvnrepository.com/artifact/org.apache.mina/mina-core -->
 		<dependency>
 			<groupId>org.apache.mina</groupId>
 			<artifactId>mina-core</artifactId>
 			<version>2.0.16</version>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/javax.validation/com.springsource.javax.validation -->
 		<dependency>
 			<groupId>javax.validation</groupId>
 			<artifactId>com.springsource.javax.validation</artifactId>
 			<version>1.0.0.GA</version>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -223,6 +220,98 @@
 			<artifactId>gson</artifactId>
 			<version>2.3</version>
 		</dependency>
+
+		<!-- winrm4j 操作hyperv虚拟机 soap -->
+		<dependency>
+			<groupId>io.cloudsoft.windows</groupId>
+			<artifactId>winrm4j</artifactId>
+			<version>0.5.0</version> <!-- WINRM4J_VERSION -->
+		</dependency>
+
+		<!-- jar dependency -->
+		<!-- <dependency> <groupId>io.cloudsoft.windows</groupId> <artifactId>winrm4j-client</artifactId> 
+			<version>${project.version}</version> </dependency> <dependency> <groupId>com.google.guava</groupId> 
+			<artifactId>guava</artifactId> <version>${guava.version}</version> <scope>test</scope> 
+			</dependency> -->
+
+		<!-- client winrm4j -->
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-transports-http</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-transports-http-hc</artifactId>
+			<version>${cxf.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.httpcomponents</groupId>
+					<artifactId>httpcore-nio</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.httpcomponents</groupId>
+					<artifactId>httpasyncclient</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-frontend-jaxws</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>winrm4j-service</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Exclusions (and then explicit dependencies below) required by cxf-rt-transports-http-hc. 
+			That tries to pull in directly httpcore-nio 4.4.5 (which pulls in httpcore 
+			4.4.5), and same for httpasyncclient. However, it also pulls in httclient, 
+			which depends on httpcore 4.4.4. This causes maven-enforcer-plugin's dependencyConvergence 
+			to fail. -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore-nio</artifactId>
+			<version>${httpcomponents.httpcore.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpasyncclient</artifactId>
+			<version>${httpcomponents.httpasyncclient.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.httpcomponents</groupId>
+					<artifactId>httpcore</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.httpcomponents</groupId>
+					<artifactId>httpcore-nio</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>mockwebserver</artifactId>
+			<version>${mockwebserver.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.xmlunit</groupId>
+			<artifactId>xmlunit-matchers</artifactId>
+			<version>${xmlunit.version}</version>
+		</dependency>
+
+		<!-- service win4j -->
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-core</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
+
 
 	</dependencies>
 
