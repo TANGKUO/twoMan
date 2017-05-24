@@ -1,0 +1,8 @@
+case b.userclass when 0 then '普通会员' when 1 then 'VIP会员' else '经销' end
+
+ if(regtimeEnd!=null&&!"".equals(regtimeEnd)&&!"undefined".equals(regtimeEnd)){
+	    	sb.append(" and to_char(b.regtimeEnd, 'yyyy-MM-dd') <='"+regtimeEnd.trim()+"'");
+	    }
+
+
+
