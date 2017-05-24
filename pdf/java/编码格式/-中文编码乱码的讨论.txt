@@ -1,0 +1,171 @@
+
+
+
+
+
+
+openlab
+open123
+乱码分类：1.控制台   2.页面
+
+控制台上乱码的产生：
+
+			分类：post请求
+
+
+		//控制台上乱码的设置  myeclipes 中的编码是gbk，jsp页面上编码是utf-8,我们来看测试结果
+
+		String username = req.getParameter("username");
+		String password=req.getParameter("password");
+		
+		
+		System.out.println("username="+username);
+		System.out.println("password="+password);
+		
+		/**	测试结果
+		 *		 username=?¨????é??
+				 password=SDFSF
+		 * */
+		
+
+	//乱码的解决：尝试在接收request数据内容的时候设置成与控制台（eclipse）一样的编码
+
+
+
+	req.setCharacterEncoding("GBK");
+		String username = req.getParameter("username");
+		String password=req.getParameter("password");
+		
+		
+		System.out.println("username="+username);
+		System.out.println("password="+password);
+
+
+
+		/**	测试结果
+		 *		username=?¨????é??
+				password=SDFSF
+		 * */
+
+
+	继续思考：尝试在接收request数据内容的时候设置成与jsp页面一样的编码
+
+		req.setCharacterEncoding("utf-8");
+		
+		
+		String username = req.getParameter("username");
+		String password=req.getParameter("password");
+		
+		
+		System.out.println("username="+username);
+		System.out.println("password="+password);
+
+		/**	测试成功
+			username=噶嘎咖
+			password=Dxcv
+		**/
+
+
+
+
+	控制台打印+get请求
+
+	
+	req.setCharacterEncoding("utf-8");
+		
+		
+		String username = req.getParameter("username");
+		String password=req.getParameter("password");
+		
+		
+		System.out.println("username="+username);
+		System.out.println("password="+password);
+
+		
+		/**	测试结果
+			username=?????????
+			password=ss
+		**/
+		
+
+	解决：
+
+
+	
+		String username = req.getParameter("username");
+		String password=req.getParameter("password");
+		
+		
+		System.out.println("username="+new String(username.getBytes("iso8859-1"),"utf-8"));
+		System.out.println("username2="+username);
+		
+
+
+	测试结果：
+		/**
+			可见：通过new String(username.getBytes("iso8859-1"),"utf-8"))问题得到了解决   因为get请求的默认编码方式是：iso8859-1
+		
+		username=高级噶
+		username2=é????§???
+
+		*/
+
+
+
+
+	总计：   get方式和post方式他们是唯一对应的，刚才测试的成功的结果是唯一对应的
+
+
+
+
+	二------>页面乱码
+
+	测试环境：myeclipes 中的编码是gbk，jsp页面上编码是utf-8	
+
+		1. get请求
+
+	
+	String username = req.getParameter("username");
+	String password=req.getParameter("password");
+
+	PrintWriter out=resp.getWriter();
+	out.write("username="+username);
+	
+	/**	测试结果
+			username鐖辩殑璇存硶
+			
+		**/
+
+	解决：
+
+		String username = req.getParameter("username");
+		String password=req.getParameter("password");
+		resp.setContentType("text/html;charset=utf-8");
+		PrintWriter out=resp.getWriter();
+		out.write("username="+new String(username.getBytes("iso8859-1"),"utf-8"));//在输出前还是要通过getBytes()方法将编码方式改变！
+
+
+
+
+
+
+		2.post请求
+
+
+
+		req.setCharacterEncoding("utf-8");						//在接收数据请求数据内容前一定要设置一下req的编码，要求和jsp页面中的编码相同		
+		String username = req.getParameter("username");
+		String password=req.getParameter("password");
+		resp.setContentType("text/html;charset=utf-8");
+		PrintWriter out=resp.getWriter();
+		out.write("username="+username);
+		
+
+
+
+
+
+
+
+
+
