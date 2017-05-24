@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html><head><script src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/ga.js" async="" type="text/javascript"></script><script charset="utf-8" src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/shares.php"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=gbk">
+<meta charset="gb2312">
+<title>Oracle中树型查询的常用方式_数据库/开发_比特网</title>
+<meta name="description" content="Oracle树查询的最重要的就是select…start with… connect by …prior 语法了。依托于该语法，我们可以将一个表形结构的中以树的顺序列出来。 Oracle中树型查询的常用方式">
+<meta name="keywords" content="Oracle">
+<meta http-equiv="mobile-agent" content="format=xhtml;url=http://m.chinabyte.com/e/database/277/12430777_m.shtml">
+<!-- baidu_tc page: 
+{"page_type":"CONTENT","default_block_action":"DELETE"} -->
+<!--[if IE]>
+<script src="http://image.chinabyte.com/w/js/310/html5.js"></script>
+<![endif]-->
+<!-- base href="http://soft.chinabyte.com/database/277/12430777.shtml" -->
+<link href="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/v5.css" type="text/css" rel="stylesheet">
+<script src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/jquery-1.js" type="text/javascript"></script>
+<script src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/bar20.htm" type="text/javascript"></script>
+<script src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/v5.js" type="text/javascript"></script>
+<script type="text/javascript"> 
+jQuery(function($){
+	$('#big').click(function(){zoomDoc(1);});
+	$('#small').click(function(){zoomDoc(-1);});
+	//搜索 
+	$('#wd').focus( 
+		function () { 
+			$(this).removeClass("blur"); 
+			$("#button").addClass("blur"); 
+		} 
+		); 
+		$('#wd').blur( 
+		function () { 
+			if($(this).val()==''){ 
+			$(this).addClass("blur"); 
+		}else{ 
+			$(this).removeClass("blur"); 
+		} 
+			$("#button").removeClass("blur"); 
+		} 
+	); 
+
+//滑动块 
+		boxs('#m-bbs',0,"mousemove"); 
+		boxs('#m-djph',0,"mousemove"); 
+})
+</script>
+<script type="text/javascript"> 
+var opiniontitle=document.title;
+var opinionurl=document.location.href;
+var articleID = 12430777;
+var channelId = 111761;
+var articleTitle = 'Oracle中树型查询的常用方式'; //本文标题
+var articleURL = "http://soft.chinabyte.com/database/277/12430777.shtml";//本文链接
+var referId=articleID;
+</script>
+<script charset="UTF-8" src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/embed.js" async="" type="text/javascript"></script><link href="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/embed.css" rel="stylesheet" type="text/css"><link type="text/css" rel="stylesheet" href="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/bite_style.css"><script type="text/javascript" src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/bcore.js"></script><script charset="utf-8" src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/StdID.js" id="bfd_cache_id"></script><script charset="utf-8" src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/AddItem.js"></script><script charset="utf-8" src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/PageView.js"></script><script charset="utf-8" src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/AddCat.js"></script><script charset="utf-8" src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/VisitCat.js"></script><script charset="utf-8" src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/Visit.js"></script><script charset="utf-8" src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/MRecVAV.js"></script></head><body id="b-soft-database"><link type="text/css" rel="stylesheet" href="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/jiathis_counter.css"><script charset="utf-8" src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/jiathis.htm"></script><link type="text/css" rel="stylesheet" href="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/jiathis_share.css"><iframe style="position: fixed; display: none; opacity: 0;" frameborder="0"></iframe><div style="position: absolute; z-index: 1000000000; display: none; top: 50%; left: 50%; overflow: auto;" class="jiathis_style"></div><div style="position: absolute; z-index: 1000000000; display: none; overflow: auto;" class="jiathis_style"></div><iframe src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/jiathis_utility.htm" style="display: none;" frameborder="0"></iframe>
+<!-- baidu_tc block_begin: {"type":"CONTENT", "action":"SHOW"} -->
+<div id="top">
+ 
+    <div style="position: static;" id="top-bar">
+    <header class="clearfix">
+      <!-- baidu_tc block_begin: {"type":"PAGE_NAV", "action":"SHOW"} -->
+      <div class="login" id="login"><a href="http://passport.chinabyte.com/?returnurl=http://soft.chinabyte.com/database/277/12430777.shtml" target="_self">登录</a>|<a href="http://passport.chinabyte.com/?returnurl=http://soft.chinabyte.com/database/277/12430777.shtml" target="_self">注册</a></div>
+	  <div class="left-wrap"> <a href="http://www.chinabyte.com/" id="ghome" target="_self">比特首页</a>|<a href="http://news.chinabyte.com/" target="_self">新闻中心</a>|<a href="http://e.chinabyte.com/" target="_self">企业计算</a>|<a href="http://cloud.chinabyte.com/" target="_self">云计算</a>|<a href="http://info.chinabyte.com/" target="_self">信息化</a>|<a href="http://mi.chinabyte.com/" target="_self">移动互联</a>|<a href="http://nbpc.chinabyte.com/" target="_self">整机外设</a> </div>
+      <div class="right-wrap"> <a href="http://blog.chinabyte.com/">博客</a> <a href="http://bbs.chinabyte.com/">论坛</a> <a href="http://tech.chinabyte.com/">技工场</a> <a href="http://product.chinabyte.com/">产品库</a></div>
+      <!-- baidu_tc block_end -->
+    </header>
+  </div>
+  <div id="page-header">
+    <header class="clearfix">
+      <div class="logo">数据库</div>
+      <div id="share"><span>我们也在这里：</span> <a href="http://weibo.com/cbnews/" style="color:#000000;text-decoration:none;font-size:12px;font-weight:normal" class="s-sina" target="_self" title="比特网新浪微博" rel="nofollow"></a> <a href="http://user.qzone.qq.com/1517281698" class="s-qqzon" title="QQ空间"></a> <a href="http://t.qq.com/chinabyte/" title="比特网腾讯微博" rel="nofollow" class="s-qqwb"></a> <a title="订阅RSS" class="s-rss" href="http://news.chinabyte.com/index.xml" target="_self"></a> <a href="javascript:window.open('http://opinion.chinabyte.com/reader/reader.jhtml?sitemapId=1&amp;url='+opinionurl+'&amp;title='+opiniontitle+'');void(0)" class="s-mail" target="_self"></a> </div>
+      <form name="search" action="http://search.chinabyte.com/searchchianbyte.do" autocomplete="off" method="get" id="top_search">
+        <input name="wd" id="wd" class="blur" type="text">
+        <input id="button" value="" type="submit">
+      </form>
+    </header>
+  </div>
+  <div style="position: static;" id="page-nav">
+    <header class="clearfix">
+      <nav class="channel-wrap">
+        			<ul>
+			 <li id="n-e"><a href="http://e.chinabyte.com/" target="_self">企业计算</a></li>
+			 <li id="n-bigdata"><a href="http://bigdata.chinabyte.com/" target="_self">大数据</a></li>
+			 <li id="n-storage"><a href="http://storage.chinabyte.com/" target="_self">存储</a></li>
+			 <li id="n-soft"><a href="http://soft.chinabyte.com/" target="_self">软件与服务</a></li>
+			 <li id="n-soft-database"><a href="http://soft.chinabyte.com/database/" target="_self">数据库/开发</a></li>
+			 <li id="n-server"><a href="http://server.chinabyte.com/" target="_self">服务器</a></li>
+			 <li id="n-soft-os"><a href="http://soft.chinabyte.com/os/" target="_self">操作系统</a></li>
+			 <li id="n-network"><a href="http://network.chinabyte.com/" target="_self">网 络</a></li>
+			 <li id="n-sec"><a href="http://sec.chinabyte.com/" target="_self">安 全</a></li>
+			</ul>
+      </nav>
+      <div class="channel-tj">
+         
+      </div>
+    </header>
+  </div>
+</div>
+ 
+<div id="navbar" class="clearfix"> 您的位置：  <a href="http://www.chinabyte.com/" target="_self">比特网</a> &gt; <a href="http://soft.chinabyte.com/" target="_self">软件与服务</a> &gt; <a href="http://soft.chinabyte.com/database/" target="_self">数据库/开发</a> &gt; 正文 </div>
+<!-- 首屏 -->
+<section id="a1" class="clearfix">
+  <article class="col-main">
+    <!-- ws -->
+    <!-- baidu_tc block_begin: {"type":"MYPOS", "action":"SHOW"} -->
+    <!-- baidu_tc block_end -->
+    <div class="box clearfix" id="main">
+      <div class="hd">
+        <!-- baidu_tc block_begin: {"type":"TITLE", "action":"SHOW"} -->
+        <h1 id="artibodyTitle">Oracle中树型查询的常用方式</h1>
+        <!-- baidu_tc block_end -->
+        <div class="titBar clearfix">
+          <div class="info"><span class="date">2012-09-20 00:00</span><span class="where">比特网</span><span class="auth">悠虎</span></div>
+          <div id="fontsize">
+            <div id="big"></div>
+            <div id="small"></div>
+          </div>
+        </div>
+        <div class="keywords">关键字：<a href="http://com.chinabyte.com/oracle/">Oracle</a>  </div>
+      </div>
+      <div id="artibody">
+        <div id="main-article" class="BSHARE_POP">
+          <div class="guanggao"> </div>
+          <!-- baidu_tc block_begin: {"type":"CONTENT", "action":"SHOW"} -->
+          <p>　　<a class="keyword_link" id="k530831492" href="http://com.chinabyte.com/oracle/" target="_blank">Oracle</a>树
+查询的最重要的就是select…start with… connect by …prior 
+语法了。依托于该语法，我们可以将一个表形结构的中以树的顺序列出来。在下面列述了Oracle中树型查询的常用查询方式以及经常使用的与树查询相关的
+Oracle特性函数等，在这里只涉及到一张表中的树查询方式而不涉及多表中的关联等。</p>
+<p>　　以我做过的一个项目中的表为例，表结构如下：</p>
+<p>　　Sql代码</p>
+<p>　　1. CREATE TABLE FLFL</p>
+<p>　　2. (</p>
+<p>　　3. ID NUMBER NOT NULL,</p>
+<p>　　4. MC NVARCHAR2(20)，</p>
+<p>　　5. FLJB NUMBER,</p>
+<p>　　6. SJFLID NUMBER</p>
+<p>　　7. )</p>
+<p>　　FLJB是作为树的级别，在很多查询中可以加快SQL的查询效率。在下面演示的功能基本上不使用这个关键字。</p>
+<p>　　SJFLID<a class="keyword_link" id="k530831619" href="http://storage.chinabyte.com/" target="_blank">存储</a>的是上级ID，如果是顶级父节点，该SJFLID为null(得补充一句，当初的确是这样设计的，不过现在知道，表中最好别有null记录，这会引起全文扫描，建议改成0代替)。</p>
+<p>　　我们从最基本的操作，逐步列出树查询中常见的操作，所以查询出来的节点以家族中的辈份作比方。</p>
+<p>　　1. 查找树中的所有顶级父节点(辈份最长的人)。 假设这个树是个目录结构，那么第一个操作总是找出所有的顶级节点，再根据该节点找到其下属节点。</p>
+<p>　　Sql代码</p>
+<p>　　1. SELECT * FROM flfl WHERE sjflid IS NULL;</p>
+<p>　　这是个引子，没用到树型查询。</p>
+<p>　　2.查找一个节点的直属子节点(所有儿子)。 如果查找的是直属子类节点，也是不用用到树型查询的。</p>
+<p>　　Sql代码</p>
+<p>　　1. SELECT * FROM flfl WHERE sjflid = 819459;</p>
+<p>　　这个可以找到ID为819459的直属子类节点。</p>
+<p>　　3.查找一个节点的所有 直属子节点(所有后代)。</p>
+<p>　　Sql代码</p>
+<p>　　1. SELECT * FROM flfl START WITH ID = 819459 CONNECT BY sjflid = PRIOR ID;</p>
+<p>　　这个查找的是ID为819459的节点下的所有直属子类节点，包括子辈的和孙子辈的所有直属节点。</p>
+<p>　　4.查找一个节点的直属父节点(父亲)。 如果查找的是节点的直属父节点，也是不用用到树型查询的。</p>
+<p>　　Sql代码</p>
+<p>　　1. SELECT b.* FROM flfl a JOIN flfl b ON a.sjflid = b.ID WHERE a.ID = 6758;</p>
+<p>　　这个找到的是ID为6758的节点的直属父节点，要用到同一张表的关联了。</p>
+<p>　　5.查找一个节点的所有直属父节点(祖宗)。</p>
+<p>　　Sql代码</p>
+<p>　　1. SELECT * FROM flfl START WITH ID = 6758 CONNECT BY PRIOR sjflid = ID;</p>
+<p>　　这里查找的就是ID为6758的所有直属父节点，打个比方就是找到一个人的父亲、祖父等。但是值得注意的是这个查询出来的结果的顺序是先列出子类节点再列出父类节点，姑且认为是个倒序吧。</p>
+<p>　　上面列出两个树型查询方式，第3条语句和第5条语句，这两条语句之间的区别在于prior关键字的位置不同，所以决定了查询的方式不同。 当sjflid = PRIOR ID时，<a class="keyword_link" id="k530831516" href="http://soft.chinabyte.com/database/" target="_blank">数据库</a>会根据当前的ID迭代出sjflid与该ID相同的记录，所以查询的结果是迭代出了所有的子类记录;而PRIOR ID = sjflid时，数据库会跟据当前的sjflid来迭代出与当前的sjflid相同的id的记录，所以查询出来的结果就是所有的父类结果。</p>
+<p>　　以下是一系列针对树结构的更深层次的查询，这里的查询不一定是最优的查询方式，或许只是其中的一种实现而已。</p>
+<p>　　6.查询一个节点的<a class="keyword_link" id="k530834487" href="http://com.chinabyte.com/brother/" target="_blank">兄弟</a>节点(亲兄弟)。</p>
+<p>　　Sql代码</p>
+<p>　　1. SELECT a.*</p>
+<p>　　2. FROM flfl a</p>
+<p>　　3. WHERE EXISTS (SELECT *</p>
+<p>　　4. FROM flfl b</p>
+<p>　　5. WHERE a.sjflid = b.sjflid AND b.ID = 6757);</p>
+<p>　　这里查询的就是与ID为6757的节点同属一个父节点的节点了，就好比亲兄弟了。</p>
+<p>　　7.查询与一个节点同级的节点(族兄弟)。 如果在表中设置了级别的字段，上表中的FLJB，那么在做这类查询时会<a class="keyword_link" id="k531802595" href="http://www.chinabyte.com/keyword/%E5%BE%88%E8%BD%BB%E6%9D%BE/" target="_blank">很轻松</a>，同一级别的就是与那个节点同级的，在这里列出不使用该字段时的实现!</p>
+<p>　　Sql代码</p>
+<p>　　1. WITH tmp AS</p>
+<p>　　2. (SELECT a.*, LEVEL lev</p>
+<p>　　3. FROM flfl a</p>
+<p>　　4. START WITH a.sjflid IS NULL</p>
+<p>　　5. CONNECT BY a.sjflid = PRIOR a.ID)</p>
+<p>　　6. SELECT *</p>
+<p>　　7. FROM tmp</p>
+<p>　　8. WHERE lev = (SELECT lev</p>
+<p>　　9. FROM tmp</p>
+<p>　　10. WHERE ID = 819394)</p>
+<p>　　这里使用两个技巧，一个是使用了LEVEL来标识每个节点在表中的级别，还有就是使用with语法模拟出了一张带有级别的临时表。</p>
+<p>　　8.查询一个节点的父节点的的兄弟节点(伯父与叔父)。</p>
+<p>　　Sql代码</p>
+<p>　　1. WITH tmp AS</p>
+<p>　　2. (SELECT flfl.*, LEVEL lev</p>
+<p>　　3. FROM flfl</p>
+<p>　　4. START WITH sjflid IS NULL</p>
+<p>　　5. CONNECT BY sjflid = PRIOR ID)</p>
+<p>　　6. SELECT b.*</p>
+<p>　　7. FROM tmp b,</p>
+<p>　　8. (SELECT *</p>
+<p>　　9. FROM tmp</p>
+<p>　　10. WHERE ID = 7004 AND lev = 2) a</p>
+<p>　　11. WHERE b.lev = 1</p>
+<p>　　12. UNION ALL</p>
+<p>　　13. SELECT *</p>
+<p>　　14. FROM tmp</p>
+<p>　　15. WHERE sjflid = (SELECT DISTINCT x.ID</p>
+<p>　　16. FROM tmp x,</p>
+<p>　　17. tmp y,</p>
+<p>　　18. (SELECT *</p>
+<p>　　19. FROM tmp</p>
+<p>　　20. WHERE ID = 7004 AND lev &gt; 2) z</p>
+<p>　　21. WHERE y.ID = z.sjflid AND x.ID = y.sjflid);</p>
+<p>　　这里查询分成以下几步。首先，将第7个一样，将全表都使用临时表加上级别;其次，根据级别来判断有几种类型，以上文中举的例子来说，有三种情
+况：(1)当前节点为顶级节点，即查询出来的lev值为1，那么它没有上级节点，不予考虑。(2)当前节点为2级节点，查询出来的lev值为2，那么就只
+要保证lev级别为1的就是其上级节点的兄弟节点。(3)其它情况就是3以及以上级别，那么就要选查询出来其上级的上级节点(祖父)，再来判断祖父的下级
+节点都是属于该节点的上级节点的兄弟节点。 最后，就是使用UNION将查询出来的结果进行结合起来，形成结果集。</p>
+<p>　　9.查询一个节点的父节点的同级节点(族叔)。</p>
+<p>　　这个其实跟第7种情况是相同的。</p>
+<p>　　Sql代码</p>
+<p>　　1. WITH tmp AS</p>
+<p>　　2. (SELECT a.*, LEVEL lev</p>
+<p>　　3. FROM flfl a</p>
+<p>　　4. START WITH a.sjflid IS NULL</p>
+<p>　　5. CONNECT BY a.sjflid = PRIOR a.ID)</p>
+<p>　　6. SELECT *</p>
+<p>　　7. FROM tmp</p>
+<p>　　8. WHERE lev = (SELECT lev</p>
+<p>　　9. FROM tmp</p>
+<p>　　10. WHERE ID = 819394) - 1</p>
+<p>　　只需要做个级别判断就成了。</p>
+<p>　　基本上，常见的查询在里面了，不常见的也有部分了。其中，查询的内容都是节点的基本信息，都是数据表中的基本字段，但是在树查询中还有些特殊需求，是对查询数据进行了处理的，常见的包括列出树路径等。</p>
+<p>　　补充一个概念，对于数据库来说，根节点并不一定是在<a class="keyword_link" id="k531557447" href="http://www.chinabyte.com/keyword/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1/" target="_blank">数据库中设计</a>的顶级节点，对于数据库来说，根节点就是start with开始的地方。</p>
+<p>　　下面列出的是一些与树相关的特殊需求。</p>
+<p>　　10.名称要列出名称全部路径。</p>
+<p>　　这里常见的有两种情况，一种是是从顶级列出，直到当前节点的名称(或者其它属性);一种是从当前节点列出，直到顶级节点的名称(或其它属性)。
+举地址为例：国内的习惯是从省开始、到市、到县、到居委会的，而国外的习惯正好相反(老师说的，还没接过国外的邮件，谁能寄个瞅瞅 )。</p>
+<p>　　从顶部开始：</p>
+<p>　　Sql代码</p>
+<p>　　1. SELECT SYS_CONNECT_BY_PATH (mc, '/')</p>
+<p>　　2. FROM flfl</p>
+<p>　　3. WHERE ID = 6498</p>
+<p>　　4. START WITH sjflid IS NULL</p>
+<p>　　5. CONNECT BY sjflid = PRIOR ID;</p>
+<p>　　从当前节点开始：</p>
+<p>　　Sql代码</p>
+<p>　　1. SELECT SYS_CONNECT_BY_PATH (mc, '/')</p>
+<p>　　2. FROM flfl</p>
+<p>　　3. START WITH ID = 6498</p>
+<p>　　4. CONNECT BY PRIOR sjflid = ID;</p>
+<p>　　在这里我又不得不放个牢骚了。oracle只提供了一个sys_connect_by_path函数，却忘了字符串的连接的顺序。在上面的例子
+中，第一个SQL是从根节点开始遍历，而第二个SQL是直接找到当前节点，从效率上来说已经是千差万别，更关键的是第一个SQL只能选择一个节点，而第二
+个SQL却是遍历出了一颗树来。再次PS一下。</p>
+<p>　　sys_connect_by_path函数就是从start with开始的地方开始遍历，并记下其遍历到的节点，start with开始的地方被视为根节点，将遍历到的路径根据函数中的分隔符，组成一个新的字符串，这个功能还是很强大的。</p>
+<p>　　11.列出当前节点的根节点。</p>
+<p>　　在前面说过，根节点就是start with开始的地方。</p>
+<p>　　Sql代码</p>
+<p>　　1. SELECT CONNECT_BY_ROOT mc, flfl.*</p>
+<p>　　2. FROM flfl</p>
+<p>　　3. START WITH ID = 6498</p>
+<p>　　4. CONNECT BY PRIOR sjflid = ID;</p>
+<p>　　connect_by_root函数用来列的前面，记录的是当前节点的根节点的内容。</p>
+<p>　　12.列出当前节点是否为叶子。</p>
+<p>　　这个比较常见，尤其在动态目录中，在查出的内容是否还有下级节点时，这个函数是很适用的。</p>
+<p>　　Sql代码</p>
+<p>　　1. SELECT CONNECT_BY_ISLEAF, flfl.*</p>
+<p>　　2. FROM flfl</p>
+<p>　　3. START WITH sjflid IS NULL</p>
+<p>　　4. CONNECT BY sjflid = PRIOR ID;</p>
+<p>　　connect_by_isleaf函数用来判断当前节点是否包含下级节点，如果包含的话，说明不是叶子节点，这里返回0;反之，如果不包含下级节点，这里返回1。</p>
+                    <!-- baidu_tc block_end -->
+        </div>
+         </div>
+      <div class="Feedback">
+        <form action="http://opinion.chinabyte.com/reader/reader.jhtml" name="feedbackForm" id="feedbackForm" target="_blank">
+          <input name="sitemapId" value="" id="sitemapId" type="hidden">
+          <input name="articleId" value="" id="articleId" type="hidden">
+          <input name="readerName" value="" id="readerName" type="hidden">
+          <input name="title" value="" id="title" type="hidden">
+          <input name="url" value="" id="url" type="hidden">
+        </form>
+        [ 责任编辑：之极 ] &nbsp;&nbsp;&nbsp;&nbsp;<a onclick="javascript:submitFeedback();" style="cursor:hand;">[ 我要挑错 ]</a> </div>
+      <div class="tool-article">
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+	<a title="分享到QQ空间" class="jiathis_button_qzone"><span class="jiathis_txt jtico jtico_qzone"></span></a>
+	<a title="分享到新浪微博" class="jiathis_button_tsina"><span class="jiathis_txt jtico jtico_tsina"></span></a>
+	<a title="分享到腾讯微博" class="jiathis_button_tqq"><span class="jiathis_txt jtico jtico_tqq"></span></a>
+	<a title="分享到豆瓣" class="jiathis_button_douban"><span class="jiathis_txt jtico jtico_douban"></span></a>
+	<a title="分享到人人网" class="jiathis_button_renren"><span class="jiathis_txt jtico jtico_renren"></span></a>
+	<a title="分享到开心网" class="jiathis_button_kaixin001"><span class="jiathis_txt jtico jtico_kaixin001"></span></a>
+	<a title="分享到百度贴吧" class="jiathis_button_tieba"><span class="jiathis_txt jtico jtico_tieba"></span></a>
+	<a title="分享到搜狐微博" class="jiathis_button_tsohu"><span class="jiathis_txt jtico jtico_tsohu"></span></a>
+	<a href="http://www.jiathis.com/share?uid=2857" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"><span title="累计分享1次" id="jiathis_counter_46" class="jiathis_button_expanded jiathis_counter jiathis_bubble_style">1</span></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {
+    data_track_clickback:false,
+    appkey:{
+        "tsina":"1902664639", 
+        "tqq":"5503af39924e46e4a92bd556109dee59", 
+    }
+} 
+</script>
+<script type="text/javascript" src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/jia.js" charset="utf-8"></script><script type="text/javascript" src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/plugin.js" charset="utf-8"></script><div style="position:absolute;width:0px;height:0px;"><object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" id="JIATHISSWF" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab" height="0" width="0"><param name="allowScriptAccess" value="always"><param name="swLiveConnect" value="true"><param name="movie" value="http://www.jiathis.com/code/swf/m.swf"><param name="FlashVars" value="z=a"><embed name="JIATHISSWF" src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/m.swf" flashvars="z=a" allowscriptaccess="always" swliveconnect="true" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" height="0" width="0"></object></div>
+<!-- JiaThis Button END -->
+      </div>
+    </div>
+     
+    <div class="box" id="m-wb"><div class="hd"><h3>微博推荐</h3><!-- div class="act"><iframe id="previewmc" src="http://follow.v.t.qq.com/index.php?c=follow&a=quick&name=chinabyte&style=5&t=1325213214061&f=1" width="125" height="24" frameborder="0" scrolling="no" allowtransparency="true" style="height:26px;display:inline;"></iframe><iframe src="http://open.qzone.qq.com/like?url=http%3A%2F%2Fuser.qzone.qq.com%2F1517281698&type=button_num&width=200&height=25&style=2" allowtransparency="true" scrolling="no" border="0" frameborder="0" style="height:25px;border:none;overflow:hidden;"></iframe></div --></div><div class="bd"><iframe src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/bulkfollow.htm" frameborder="0" height="185" scrolling="no" width="678"></iframe></div></div><div class="mod clearfix">
+      <div class="box mr">
+        <div class="hd">
+          <h3>相关文章</h3>
+        </div>
+        <div class="bd">
+          <ul class="list">
+</ul>
+        </div>
+      </div>
+      <div id="bfd_goods_box" class="box"><div class="hd"><h3>浏览过本文的还浏览过</h3><div id="bfd_logo4"><a href="http://www.baifendian.com/" target="_blank"></a></div></div><div class="bd"><ul class="list"><li><a href="http://soft.chinabyte.com/database/155/12588655.shtml">批量解决Oracle锁等待的方法</a></li><li><a href="http://soft.chinabyte.com/database/93/12281593.shtml">Java对存储过程的调用方法</a></li><li><a href="http://soft.chinabyte.com/database/269/11693769.shtml">Oracle树形结构实行查询</a></li><li><a href="http://soft.chinabyte.com/database/59/11322059.shtml">Linux 下配置java路径</a></li><li><a href="http://soft.chinabyte.com/database/193/12367193.shtml">Oracle字符串连接的使用方法</a></li></ul></div></div><div class="clearfix"></div>
+    </div>
+        <div id="wpl">
+      <div>
+<!-- Duoshuo Comment BEGIN -->
+	<div id="ds-thread" class="ds-thread" data-thread-key="12430777" data-title="Oracle中树型查询的常用方式" data-author-key="之极" data-category="技巧" data-form-positon="top" data-limit="20" data-order="desc" data-channel-key="111761"><div id="ds-reset"><div class="ds-comments-info"><div class="ds-sort"><a class="ds-order-desc ds-current">最新</a><a class="ds-order-asc">最早</a><a class="ds-order-hot">最热</a></div><ul class="ds-comments-tabs"><li class="ds-tab"><a class="ds-comments-tab-duoshuo ds-current" href="javascript:void(0);">评论</a></li><li class="ds-tab"><a class="ds-comments-tab-qqt" href="javascript:void(0);"><span class="ds-highlight">3</span>条腾讯微博</a></li></ul></div><ul class="ds-comments"><li class="ds-post ds-post-placeholder">还没有评论，沙发等你来抢</li></ul><div style="display: none;" class="ds-paginator"><div class="ds-border"></div><a data-page="1" href="javascript:void(0);" class="ds-current">1</a></div><a name="respond"></a><div class="ds-login-buttons"><p>社交帐号登录:</p><div class="ds-social-links"><ul class="ds-service-list"><li><a href="http://chinabyte.duoshuo.com/login/weibo/" rel="nofollow" class="ds-service-link ds-weibo">微博</a></li><li><a href="http://chinabyte.duoshuo.com/login/qq/" rel="nofollow" class="ds-service-link ds-qq">QQ</a></li><li><a href="http://chinabyte.duoshuo.com/login/renren/" rel="nofollow" class="ds-service-link ds-renren">人人</a></li><li><a href="http://chinabyte.duoshuo.com/login/douban/" rel="nofollow" class="ds-service-link ds-douban">豆瓣</a></li><li><a class="ds-more-services" href="javascript:void(0)">更多&#187;</a></li></ul><ul class="ds-service-list ds-additional-services"><li><a href="http://chinabyte.duoshuo.com/login/kaixin/" rel="nofollow" class="ds-service-link ds-kaixin">开心</a></li><li><a href="http://chinabyte.duoshuo.com/login/netease/" rel="nofollow" class="ds-service-link ds-netease">网易</a></li><li><a href="http://chinabyte.duoshuo.com/login/sohu/" rel="nofollow" class="ds-service-link ds-sohu">搜狐</a></li><li><a href="http://chinabyte.duoshuo.com/login/baidu/" rel="nofollow" class="ds-service-link ds-baidu">百度</a></li><li><a href="http://chinabyte.duoshuo.com/login/google/" rel="nofollow" class="ds-service-link ds-google">谷歌</a></li></ul></div></div><div class="ds-replybox"><a class="ds-avatar" href="javascript:void(0);" onclick="return false"><img src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/10175.jpg" alt=""></a><form method="post"><input name="thread_id" value="1319908956902018299" type="hidden">
+<input name="parent_id" value="" type="hidden"><div class="ds-textarea-wrapper ds-rounded-top"><textarea name="message" title="Ctrl+Enter快捷提交" placeholder="说点什么吧…"></textarea><pre class="ds-hidden-text"></pre></div><div class="ds-post-toolbar"><div class="ds-post-options ds-gradient-bg"><span class="ds-sync"></span></div><button class="ds-post-button" type="submit">发布</button><div class="ds-toolbar-buttons"><a class="ds-toolbar-button ds-add-emote" title="插入表情"></a></div></div></form></div><p class="ds-powered-by"><a href="http://duoshuo.com/" target="_blank" rel="nofollow">比特网正在使用多说</a></p></div></div>
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"chinabyte"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = 'http://static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		|| document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- Duoshuo Comment END -->
+      </div>
+    </div>
+        <div class="mod" id="brand">
+      <div class="hd">
+        <h3><a href="http://www.chinabyte.com/ztzh/">最新专题</a></h3>
+        <a href="http://www.chinabyte.com/ztzh/" class="act">更多</a></div>
+      <div class="bd">
+        <ul class="list4 clearfix">
+	<li> <a href="" target="_blank"><img alt="" src="" height="75" width="120"></a>
+		<h5><a href="" target="_blank"></a></h5>
+	</li>
+	<li> <a href="" target="_blank"><img alt="" src="" height="75" width="120"></a>
+		<h5><a href="" target="_blank"></a></h5>
+	</li>
+	<li> <a href="" target="_blank"><img alt="" src="" height="75" width="120"></a>
+		<h5><a href="" target="_blank"></a></h5>
+	</li>
+<script language="javascript" type="text/javascript">sc2();</script><li><a href="http://iot.10086.cn/" title="打造物联网智能家居时代"><img src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/lizhi.jpg" height="75" width="120"></a> <h5><a href="http://iot.10086.cn/" title="打造物联网智能家居时代">打造物联网智能家居时代</a></h5></li>
+</ul>
+      </div>
+    </div>
+    <!-- we -->
+  </article>
+  <aside class="col-extra">  
+        <div class="box">
+      <div class="hd"><h3><a href="http://app.chinabyte.com/cbnews/">扫一扫，IT资讯全知晓</a></h3></div>
+      <div class="bd" style="text-align:center;">
+<a href="http://app.chinabyte.com/cbnews/"><img src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/erwei2-1.jpg" alt="扫一扫，IT资讯全知晓" height="140" border="0" width="140"></a>
+      </div>
+    </div>
+    <div class="box" id="m-zt">
+      <div class="hd">
+        <h3><a href="http://www.chinabyte.com/ztzh/">推荐专题</a></h3>
+        <a href="http://www.chinabyte.com/ztzh/" class="act">更多</a></div>
+      <div class="bd">
+        <ul class="list6 clearfix lob">
+		<li> <a href="http://soft.chinabyte.com/ibmtechnicalsummit2013/" target="_blank"><img alt="见智,见未来 2013 IBM技术峰会" src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/Y2Z9456B3SA2_L.jpg" height="75" width="120"></a>
+		<h5><a href="http://soft.chinabyte.com/ibmtechnicalsummit2013/" target="_blank">见智,见未来 2013 IBM技术峰会</a></h5>
+	</li>
+			<li> <a href="http://soft.chinabyte.com/sap/zhibo/" target="_blank"><img alt="利用SAP商务分析逆袭成长" src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/CI7QMP1C3895_L.jpg" height="75" width="120"></a>
+		<h5><a href="http://soft.chinabyte.com/sap/zhibo/" target="_blank">利用SAP商务分析逆袭成长</a></h5>
+	</li>
+									</ul>
+<ul class="list">
+				<li><a href="http://soft.chinabyte.com/yonyounc6/">用友NC6 大管理驱动集团企业管控</a></li>	
+			<li><a href="http://soft.chinabyte.com/u8jia/">成长型企业如何构建精细管理</a></li>	
+			<li><a href="http://soft.chinabyte.com/wssohu/">重塑IT管理Win Server 2012保障业务连续性</a></li>	
+			<li><a href="http://soft.chinabyte.com/ws2012yun/">授人以渔 Windows Server 2012构建RISE云平台</a></li>	
+			<li><a href="http://soft.chinabyte.com/ws2012/">Windows Server 2012在医疗行业应用实践</a></li>	
+			<li><a href="http://soft.chinabyte.com/hongjing_2013/">2013人力资源管理与信息化高峰论坛</a></li>	
+			<li><a href="http://soft.chinabyte.com/zt/hpidc2013/">惠普大数据云时代下的企业变革与安全保障</a></li>	
+			<li><a href="http://soft.chinabyte.com/hp_yunwei/">“四化”IT运维 提升运维绩效</a></li>	
+	</ul>
+      </div>
+    </div>
+        <div class="box" id="video">
+      <div class="hd">
+        <h3><a href="http://www.chinabyte.com/ztzh/">原创视频教程</a></h3>
+        <a href="http://www.chinabyte.com/ztzh/" class="act">更多</a> </div>
+      <div class="bd">
+          <ul class="list6 clearfix ">
+<li class="flow">
+<a href="http://tech.chinabyte.com/thread-548141-1-1.html" target="_blank"><img alt="机票B2G/B2C/B2B开发" src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/135743e0y00dy93lv3r7kz.png" height="75" width="120"><i></i></a>
+<h5><a href="http://tech.chinabyte.com/thread-548141-1-1.html" target="_blank">机票B2G/B2C/B2B开发</a></h5>
+</li>
+<li class="flow">
+<a href="http://tech.chinabyte.com/thread-548096-1-1.html" target="_blank"><img alt="炎炎夏日 来快吧避暑" src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/134950l9zdnq3vcd9993rc.png" height="75" width="120"><i></i></a>
+<h5><a href="http://tech.chinabyte.com/thread-548096-1-1.html" target="_blank">炎炎夏日 来快吧避暑</a></h5>
+</li>
+<li class="flow">
+<a href="http://tech.chinabyte.com/thread-548027-1-1.html" target="_blank"><img alt="42名精神病人暴打管理员 抢钥匙手机现金组团越狱" src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/110131u9430qa03000q39h.jpg" height="75" width="120"><i></i></a>
+<h5><a href="http://tech.chinabyte.com/thread-548027-1-1.html" target="_blank">42名精神病人暴打管理员 抢钥匙手机现金组团越狱</a></h5>
+</li>
+<li class="flow">
+<a href="http://tech.chinabyte.com/thread-548026-1-1.html" target="_blank"><img alt="空姐新妆容何以雷翻众网友?字号" src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/105742f6vjazm2qduwttzz.jpg" height="75" width="120"><i></i></a>
+<h5><a href="http://tech.chinabyte.com/thread-548026-1-1.html" target="_blank">空姐新妆容何以雷翻众网友?字号</a></h5>
+</li>
+</ul>
+      </div>
+    </div>
+        <div class="box" id="m-blog">
+      <div class="hd">
+        <h3><a href="http://blog.chinabyte.com/">博客精选</a></h3>
+        <a href="http://blog.chinabyte.com/" class="act">更多</a></div>
+      <div class="bd">
+        <ul class="list lob">
+<li><i class="type">[gzren135]</i><a href="http://blog.chinabyte.com/a/3089550.html">做系统不难，难的是生态</a></li>	
+<li><i class="type">[RyanLyn]</i><a href="http://blog.chinabyte.com/a/3089385.html">2012大学生就业率中的青春寻伯乐</a></li>	
+<li><i class="type">[北塔软件]</i><a href="http://blog.chinabyte.com/a/3089321.html">[转帖]实现事前运维，北塔软件助力江阴市人民医院</a></li>	
+<li><i class="type">[xujiandaxia1]</i><a href="http://blog.chinabyte.com/a/3089241.html">百度快照的那些事</a></li>	
+<li><i class="type">[xujiandaxia1]</i><a href="http://blog.chinabyte.com/a/3089236.html">工欲善其事必先利其器，网站想建好，再谈推广！</a></li>	
+<li><i class="type">[dl_muchlab]</i><a href="http://blog.chinabyte.com/a/3089098.html">微软将下架带有严重漏洞的应用</a></li>	
+<li><i class="type">[网络科技园]</i><a href="http://blog.chinabyte.com/a/3088948.html">做网站也要调查网站建设的目标</a></li>	
+<li><i class="type">[zrzy_etc]</i><a href="http://blog.chinabyte.com/a/3088551.html">IT与学习</a></li>	
+</ul>
+        <div class="bmore clearfix"><a href="http://blog.chinabyte.com/u/70600/">老　杳</a> <a href="http://blog.chinabyte.com/u/70619/">孙永杰</a> <a href="http://blog.chinabyte.com/u/70645/">刘兴亮</a> <a href="http://blog.chinabyte.com/u/74610/">陈永东</a> <a href="http://blog.chinabyte.com/u/73152/">马继华</a> <a href="http://blog.chinabyte.com/u/70654/">毛启盈</a> <a href="http://blog.chinabyte.com/u/73331/">阿　凡</a> <a href="http://blog.chinabyte.com/u/74836/">月　光</a> <a href="http://blog.chinabyte.com/u/74585/">陈志刚</a> <a href="http://blog.chinabyte.com/">更多→</a> </div>
+      </div>
+    </div>
+     
+     
+    <div class="box" id="m-bbs">
+      <div class="hd">
+        <h3>论坛</h3>
+      </div>
+      <div class="bd">
+          <ul class="list6" style="display:none;">
+<h5><a href="http://bbs.chinabyte.com/thread-809447-1-1.html" target="_blank" title="雅虎紫色标志招人厌：违背数字时代平等主义精神？">雅虎紫色标志招人厌：</a></h5>
+
+<h5><a href="http://bbs.chinabyte.com/thread-809428-1-1.html" target="_blank" title="微软重组业务部门的10大理由：Win8是一大错误">微软重组业务部门的1</a></h5>
+
+<h5><a href="http://bbs.chinabyte.com/thread-808558-1-1.html" target="_blank" title="要和苹果分手了？三星将向亚马逊和索尼提供芯片">要和苹果分手了？三星</a></h5>
+
+<h5><a href="http://bbs.chinabyte.com/thread-808528-1-1.html" target="_blank" title="苹果新专利：使用运动、触控的下一代混合输入设备">苹果新专利：使用运动</a></h5>
+
+</ul>
+          <ul class="list">
+<li><a href="http://bbs.chinabyte.com/thread-809447-1-1.html" title="雅虎紫色标志招人厌：违背数字时代平等主义精神？">雅虎紫色标志招人厌：违背数字时代平等主义精神？</a></li>
+<li><a href="http://bbs.chinabyte.com/thread-809428-1-1.html" title="微软重组业务部门的10大理由：Win8是一大错误">微软重组业务部门的10大理由：Win8是一大错误</a></li>
+<li><a href="http://bbs.chinabyte.com/thread-808558-1-1.html" title="要和苹果分手了？三星将向亚马逊和索尼提供芯片">要和苹果分手了？三星将向亚马逊和索尼提供芯片</a></li>
+<li><a href="http://bbs.chinabyte.com/thread-808528-1-1.html" title="苹果新专利：使用运动、触控的下一代混合输入设备">苹果新专利：使用运动、触控的下一代混合输入设备</a></li>
+<li><a href="http://bbs.chinabyte.com/thread-808198-1-1.html" title="果壳智能手表受关注 或影响智能机格局">果壳智能手表受关注 或影响智能机格局</a></li>
+<li><a href="http://bbs.chinabyte.com/thread-808172-1-1.html" title="谷歌内幕：详解互联网巨头的做事逻辑">谷歌内幕：详解互联网巨头的做事逻辑</a></li>
+<li><a href="http://bbs.chinabyte.com/thread-807851-1-1.html" title="[评论]国产手机真的就此崛起了吗？">[评论]国产手机真的就此崛起了吗？</a></li>
+<li><a href="http://bbs.chinabyte.com/thread-807815-1-1.html" title="库克的苹果变形记：可穿戴设备或唱主角">库克的苹果变形记：可穿戴设备或唱主角</a></li>
+</ul>
+      </div>
+    </div>
+ 
+    <div class="box" id="m-djph">
+      <div class="hd clearfix">
+        <h3>点击排行</h3>
+        <ul class="tab-holder clearfix">
+          <li class="selected"><a href="http://soft.chinabyte.com/more/111761_28295_ph_day_1.shtml">每日排行</a></li>
+          <li><a href="http://soft.chinabyte.com/more/111761_28295_ph_week_1.shtml">每周排行</a></li>
+          <li><a href="http://soft.chinabyte.com/more/111761_28295_ph_mouth_1.shtml">每月排行</a></li>
+        </ul>
+      </div>
+      <div class="bd">
+        <div class="tab-panel">
+          <ul class="list">
+<script language="javascript" type="text/javascript">sc1();</script><li><a href="http://iot.10086.cn:12080/search/search.jsp?sid=1310662320477&amp;keyword=%E6%97%A0%E7%BA%BF%E5%9F%8E%E5%B8%82&amp;go.x=0&amp;go.y=0">中国移动大力发展“无线城市”让智能生活不再遥远</a></li>
+</ul>
+        </div>
+        <div class="tab-panel hidden">
+          <ul class="list">
+</ul>
+        </div>
+        <div class="tab-panel hidden">
+          <ul class="list">
+</ul>
+        </div>
+      </div>
+    </div>
+    <div class="box" id="m-btjd">
+      <div class="hd">
+        <h3>比特焦点</h3>
+      </div>
+      <div class="bd clearfix">
+        <ul>
+          <li><a class="jd2" title="软交会" href="http://soft.chinabyte.com/cisis_2013/">软交会</a></li>
+<li><a class="jd2" title="IDF 2013" href="http://server.chinabyte.com/idf2013/">IDF 2013</a></li>
+<li><a class="jd3" title="爱普生" href="http://product.chinabyte.com/projector/epson/">爱普生</a></li>
+<li><a class="jd2" title="MWC" href="http://shang.chinabyte.com/zt/MWC2013/">MWC</a></li>
+<li><a class="jd1" title="CES" href="http://ces.chinabyte.com/">CES</a></li>
+<li><a class="jd4" title="云计算" href="http://cloud.chinabyte.com/">云计算</a></li>
+<li><a class="jd2" title="虚拟化" href="http://www.chinabyte.com/more/124579.shtml">虚拟化</a></li>
+<li><a class="jd2" title="vmware" href="http://com.chinabyte.com/vmware/">vmware</a></li>
+<li><a class="jd1" title="oracle" href="http://com.chinabyte.com/oracle/">oracle</a></li>
+<li><a class="jd3" title="微软" href="http://com.chinabyte.com/microsoft/">微软</a></li>
+<li><a class="jd1" title="Windows8" href="http://win8.chinabyte.com/">Windows8</a></li>
+<li><a class="jd2" title="大数据" href="http://www.chinabyte.com/zq/bigdata/">大数据</a></li>
+<li><a class="jd4" title="CMO" href="http://cmo.chinabyte.com/">CMO</a></li>
+<li><a class="jd1" title="CIO" href="http://cioclub.chinabyte.com/">CIO</a></li>
+<li><a class="jd2" title="thinkserver" href="http://www.chinabyte.com/zq/thinkserver/">ThinkServer</a></li>
+<li><a class="jd4" title="ARM" href="http://www.chinabyte.com/zq/arm/">ARM</a></li>
+<li><a class="jd2" title="Windows Server 2012" href="http://www.chinabyte.com/zq/WindowsServer2012/">Windows Server 2012</a></li>
+<li><a class="jd3" title="BI" href="http://www.chinabyte.com/zq/bi/">BI</a></li>
+<li><a class="jd3" title="hadoop" href="http://www.chinabyte.com/zq/hadoop/">hadoop</a></li>
+<li><a class="jd2" title="BI" href="http://www.chinabyte.com/zq/ultrabook/">超级本</a></li>
+<li><a class="jd1" title="hadoop" href="http://www.chinabyte.com/zq/mobileinformation/">移动信息化</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="box" id="m-dy">
+      <div class="hd">
+        <h3>邮件订阅</h3>
+      </div>
+      <div class="bd clearfix">
+        <form id="subscribeForm" name="subscribeForm" action="http://maillist.chinabyte.com/mail/common/subscribe!subscribeTemps.do" method="post">
+<input id="siteId" name="siteId" value="3" type="hidden">
+<input id="ac" name="ac" value="subscribe" type="hidden">
+<div class="mailbox">
+<dl class="dylist">
+<dt><label class="fl"><input id="mailGroupId" name="mailGroupId" value="69" type="checkbox"><a onmousemove="showLayer('show1')" onmouseout="hideLayer('show1')"><label for="mailGroupId1">软件信息化周刊</label></a></label><label class="fl"><input id="mailGroupId" name="mailGroupId" value="1002" type="checkbox"><a onmousemove="showLayer('show2')" onmouseout="hideLayer('show2')"><label for="mailGroupId2">商务办公周刊</label></a></label> 
+</dt><dd id="show1" class="none">
+<div class="layout">
+<div class="t">软件信息化周刊</div>
+<div class="d">比特软件信息化周刊提供以数据库、操作系统和管理软件为重点的全面软件信息化产业热点、应用方案推荐、实用技巧分享等。以最新的软件资讯，最新的软件技巧，最新的软件与服务业内动态来为IT用户找到软捷径。</div></div>
+</dd><dd id="show2" class="none">
+<div class="layout">
+<div class="t">商务办公周刊</div>
+<div class="d">比特商务周刊是一个及行业资讯、深度分析、企业导购等为一体的综合性周刊。其中，与中国计量科学研究院合力打造的比特实验室可以为商业用户提供最权威的采购指南。是企业用户不可缺少的智选周刊！</div></div></dd></dl>
+<dl class="dylist">
+<dt><label class="fl"><input id="mailGroupId" name="mailGroupId" value="1007" type="checkbox"><a onmousemove="showLayer('show3')" onmouseout="hideLayer('show3')"><label for="mailGroupId3">网络周刊</label></a></label><label class="fl"><input id="mailGroupId" name="mailGroupId" value="1004" type="checkbox"><a onmousemove="showLayer('show4')" onmouseout="hideLayer('show4')"><label for="mailGroupId4">服务器周刊</label></a></label> 
+</dt><dd id="show3" class="none">
+<div class="layout">
+<div class="t">网络周刊</div>
+<div class="d">比特网络周刊向企业网管员以及网络技术和产品使用者提供关于网络产业动态、技术热点、组网、建网、网络管理、网络运维等最新技术和实用技巧，帮助网管答疑解惑，成为网管好帮手。</div></div>
+</dd><dd id="show4" class="none">
+<div class="layout">
+<div class="t">服务器周刊</div>
+<div class="d">比特服务器周刊作为比特网的重点频道之一，主要关注x86服务器，RISC架构服务器以及高性能计算机行业的产品及发展动态。通过最独到的编辑观点和业界动态分析，让您第一时间了解服务器行业的趋势。</div></div></dd></dl>
+<dl class="dylist">
+<dt><label class="fl"><input id="mailGroupId" name="mailGroupId" value="1005" type="checkbox"><a onmousemove="showLayer('show5')" onmouseout="hideLayer('show5')"><label for="mailGroupId5">存储周刊</label></a></label><label class="fl"><input id="mailGroupId" name="mailGroupId" value="1006" type="checkbox"><a onmousemove="showLayer('show6')" onmouseout="hideLayer('show6')"><label for="mailGroupId6">安全周刊</label></a></label> 
+</dt><dd id="show5" class="none">
+<div class="layout">
+<div class="t">存储周刊</div>
+<div class="d">比特存储周刊长期以来，为读者提供企业存储领域高质量的原创内容，及时、全面的资讯、技术、方案以及案例文章，力求成为业界领先的存储媒体。比特存储周刊始终致力于用户的企业信息化建设、存储业务、数据保护与容灾构建以及数据管理部署等方面服务。</div></div>
+</dd><dd id="show6" class="none">
+<div class="layout">
+<div class="t">安全周刊 </div>
+<div class="d">比特安全周刊通过专业的信息安全内容建设，为企业级用户打造最具商业价值的信息沟通平台，并为安全厂商提供多层面、多维度的媒体宣传手段。与其他同类网站信息安全内容相比，比特安全周刊运作模式更加独立，对信息安全界的动态新闻更新更快。</div></div></dd></dl>
+<dl class="dylist">
+<dt><label class="fl"><input id="mailGroupId" name="mailGroupId" value="2221" type="checkbox"><a onmousemove="showLayer('show7')" onmouseout="hideLayer('show7')"><label for="mailGroupId7">新闻中心热点推荐</label></a></label><label class="fl"><input id="mailGroupId" name="mailGroupId" value="9961" type="checkbox"><a onmousemove="showLayer('show8')" onmouseout="hideLayer('show8')"><label for="mailGroupId8">云计算周刊</label></a></label> 
+</dt><dd id="show7" class="none">
+<div class="layout">
+<div class="t">新闻中心热点推荐</div>
+<div class="d">新闻中心以独特视角精选一周内最具影响力的行业重大事件或圈内精彩故事，为企业级用户打造重点突出，可读性强，商业价值高的信息共享平台；同时为互联网、IT业界及通信厂商提供一条精准快捷，渗透力强，覆盖面广的媒体传播途径。</div></div>
+</dd><dd id="show8" class="none">
+<div class="layout">
+<div class="t">云计算周刊</div>
+<div class="d">比特云计算周刊关注云计算产业热点技术应用与趋势发展，全方位报道云计算领域最新动态。为用户与企业架设起沟通交流平台。包括IaaS、PaaS、SaaS各种不同的服务类型以及相关的安全与管理内容介绍。</div></div></dd></dl>
+<dl class="dylist">
+<dt><label class="fl"><input id="mailGroupId" name="mailGroupId" value="12381" type="checkbox"><a onmousemove="showLayer('show9')" onmouseout="hideLayer('show9')"><label for="mailGroupId9">CIO俱乐部周刊</label></a></label><label class="fl"><input id="mailGroupId" name="mailGroupId" value="13781" type="checkbox"><a onmousemove="showLayer('show10')" onmouseout="hideLayer('show10')"><label for="mailGroupId10">IT专家网</label></a></label> 
+</dt><dd id="show9" class="none">
+<div class="layout">
+<div class="t">CIO俱乐部周刊</div>
+<div class="d">比特CIO俱乐部周刊以大量高端CIO沙龙或专题研讨会以及对明星CIO的深入采访为依托，汇聚中国500强CIO的集体
+智慧。旨为中国杰出的CIO提供一个良好的互融互通 
+、促进交流的平台，并持续提供丰富的资讯和服务，探讨信息化建设，推动中国信息化发展引领CIO未来职业发展。</div></div>
+</dd><dd id="show10" class="none">
+<div class="layout">
+<div class="t">IT专家网</div>
+<div class="d">IT专家新闻邮件长期以来，以定向、分众、整合的商业模式，为企业IT专业人士以及IT系统采购决策者提供高质量的原创内容，包括IT新闻、评论、专家答疑、技巧和白皮书。此外，IT专家网还为读者提供包括咨询、社区、论坛、线下会议、读者沙龙等多种服务。</div></div></dd></dl>
+<dl class="dylist">
+	<dt><label class="fl"><input id="mailGroupId" name="mailGroupId" value="14441" type="checkbox"><a onmousemove="showLayer('show11')" onmouseout="hideLayer('show11')"><label for="mailGroupId9">X周刊</label></a></label></dt>
+	<dd id="show11" class="none">
+		<div class="layout">
+		<div class="t">X周刊</div>
+		<div class="d">X周刊是一份IT人的技术娱乐周刊，给用户实时传递I最新T资讯、IT段子、技术技巧、畅销书籍，同时用户还能参与我们推荐的互动游戏，给广大的IT技术人士忙碌工作之余带来轻松休闲一刻。</div></div>
+	</dd>
+</dl>
+<dl></dl>
+<div class="ezine">
+<div class="textbox"><input class="text" id="email" name="email" onblur="this.style.color='#8a8a8a';if(this.value=='')this.value='例：abc@chinabyte.com';" onfocus="this.style.color='#000';if(this.value=='例：abc@chinabyte.com')this.value='';" value="例：abc@chinabyte.com" type="text"><button type="button" onclick="submitSubscribe();">订阅</button> </div></div>
+</div></form>
+      </div>
+    </div>
+     
+      </aside>
+</section>
+ 
+<!-- 页脚 -->
+<footer class="footer">
+  <div class="footer-nav"> <a href="http://www.tianjimedia.com/249/11453749.shtml">关于我们</a> | <a href="http://www.tianjimedia.com/english/31/8262031.shtml">About us</a> | <a href="http://www.tianjimedia.com/attorney/">网站律师</a> | <a href="http://www.tianjimedia.com/ar/">天极服务</a> | <a href="http://maillist.chinabyte.com/">电子杂志</a> | <a href="http://rss.chinabyte.com/">RSS订阅</a> | <a href="http://www.tianjimedia.com/invitation/">加入我们</a> | <a href="http://www.tianjimedia.com/tjdt/list/">天极动态</a> | <a href="http://www.chinabyte.com/mtdq">媒体大全</a> | <a href="http://www.chinabyte.com/sitemap.html">网站地图</a> </div>
+  <div class="copyright">
+    <p>比特网 版权所有 渝ICP证B2-20030003号</p>
+    <p>Copyright (C) 1997-2013 Chinabyte.com, All Rights Reserved</p>
+    <p>客户服务、商务合作电话：010-82657868-652 <a href="http://opinion.chinabyte.com/reader/reader.jhtml?sitemapId=1&amp;url=http://www.chinabyte.com&amp;title=%B1%C8%CC%D8%CD%F8" rel="nofollow">在线意见</a></p>
+  </div>
+</footer>
+<script type="text/javascript" src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/bar20.htm"></script>
+<script type="text/javascript"> 	
+	var url = document.location.href; 
+	var t_loginHTML = ""; 
+	if(customerid!=0) { 
+	if(url.indexOf("ticket") > -1) url= url.substring(0,url.indexOf("ticket")); 
+	if(url.indexOf("?")==url.length-1) url= url.substring(0,url.indexOf("?"));	
+	document.getElementById("login").innerHTML="欢迎您：<a href=http://passport.chinabyte.com/uc/index.do><b>"+nickname+"</b></a><a href=http://passport.chinabyte.com/cas/logout?service="+url+" target=_self>退出</a>";
+	}else{ 
+	if(url.indexOf("ticket") > -1) url= url.substring(0,url.indexOf("ticket")); 
+	if(url.indexOf("?")==url.length-1) url= url.substring(0,url.indexOf("?")); 
+	t_loginHTML += "<a href=http://passport.chinabyte.com?returnurl="+url+" target=_self>登录</a>|<a href=http://passport.chinabyte.com?returnurl="+url+" target=_self>注册</a></span>"; 	
+	document.getElementById("login").innerHTML=t_loginHTML;
+	} 
+</script>  
+<!-- baidu_tc block_end -->
+<!--广告 预留块--->
+ 
+
+<!-- 监控代码 -->
+
+<!--鏂癱ounter寮 �濮�-->
+<script src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/web-utils.js"></script>
+<script type="text/javascript"> 
+initCookie();
+    var re = new RegExp(".*/(\\d+)(_(\\d+))?\\.shtml","ig");
+    var _aid = "-1";
+    if(re.exec(document.location.href) != null){
+       _aid = RegExp.$1
+    }
+sentParamter(_aid,'1');
+</script><img src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/counter.htm" alt="" height="0" border="0" width="0">
+<!--鏂癱ounter缁撴潫-->
+
+
+<script type="text/javascript">
+
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc2ecbfe0013c0738c47f5b157c37b1ca' type='text/javascript'%3E%3C/script%3E"));
+</script><script src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/h.js" type="text/javascript"></script>
+
+<script type="text/javascript"> 
+initCookie();
+    var re = new RegExp(".*/(\\d+)(_(\\d+))?\\.shtml","ig");
+    var _aid = "-1";
+    if(re.exec(document.location.href) != null){
+       _aid = RegExp.$1
+    }
+sentParamter(_aid,'1');
+</script>
+
+<!-- START GA.js -->
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-11575536-1']);
+  _gaq.push(['_setDomainName', '.chinabyte.com']);
+  _gaq.push(['_addOrganic', 'baidu', 'word']);
+  _gaq.push(['_addOrganic', 'google', 'q']);
+  _gaq.push(['_addOrganic', 'soso', 'w']);
+  _gaq.push(['_addOrganic', '3721', 'name']);
+  _gaq.push(['_addOrganic', 'yodao', 'q']);
+  _gaq.push(['_addOrganic', 'vnet', 'kw']);
+  _gaq.push(['_addOrganic', 'sogou', 'query']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+<!-- END GA.js -->
+
+<div id="article_code" style="bottom: 0px; left: 0px; position: fixed; display: block;">
+	<div><p>微信扫描，分享到朋友圈</p><img src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/chart.png" alt="微信扫描，分享到朋友圈" height="150" border="0" width="150"></div>
+</div>
+<style type="text/css">
+#top-bar {top:0; width:100%; z-index:100; left:0;}
+#page-nav {top:30px; width:100%; z-index:100; left:0;}
+#article_code div{position:relative;}
+#article_code div p{position:absolute;top:3px;left:10px;}
+</style>
+<script type="text/javascript">
+var mo=parseInt(document.getElementById('page-nav').getBoundingClientRect().bottom);
+var mo2=parseInt(document.getElementById('top-bar').getBoundingClientRect().bottom);
+String.prototype.hasString = function(g) {
+    if (typeof g == "object") {
+        for (var f = 0,
+        h = g.length; f < h; f++) {
+            if (!this.hasString(g[f])) {
+                return false
+            }
+        }
+        return true
+    } else {
+        if (this.indexOf(g) != -1) {
+            return true
+        }
+    }
+};
+c = navigator.userAgent;
+ie6 = c.hasString("MSIE 6") && !c.hasString("MSIE 7") && !c.hasString("MSIE 8");
+function showHideBar(e){
+	var scrollHeight=document.documentElement.scrollTop||document.body.scrollTop;
+     e = window.event || e;
+     wheel = e.wheelDelta / 120 || -e.detail / 3;
+	if(wheel==1 && scrollHeight>mo ){
+		$("#page-nav").css('position','fixed');
+	}else{
+		$("#page-nav").css('position','static');
+	}
+	if(wheel==1 && scrollHeight>mo2 ){
+		$("#top-bar").css('position','fixed');
+	}else{
+		$("#top-bar").css('position','static');
+	}
+}
+if(!ie6){
+	/*注册事件*/ 
+	if(document.addEventListener){ 
+		document.addEventListener('DOMMouseScroll',showHideBar,false); 
+	}//W3C 
+	window.onmousewheel=document.onmousewheel=showHideBar;//IE/Opera/Chrome 
+}
+if(document.body.clientWidth>1200){$('#article_code').css('display','block')}
+$('#article_code div').append('<img src="http://chart.apis.google.com/chart?cht=qr&&chs=150x150&chl=http://app.chinabyte.com/weixin/article/?aid='+articleID+'" width="150" height="150" border="0" alt="微信扫描，分享到朋友圈">');
+</script>
+
+<!--new counter 20120827-->
+<script src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/imp-cb1.js"></script><iframe src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/imp-cb1.htm" frameborder="0" height="0" scrolling="no" width="0"></iframe>
+<!-- 百分点 -->
+<script type="text/javascript" charset="utf-8" src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/bite_goods.js"></script>
+<script type="text/javascript" src="Oracle%E4%B8%AD%E6%A0%91%E5%9E%8B%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E5%BC%8F_%E6%95%B0%E6%8D%AE%E5%BA%93_%E5%BC%80%E5%8F%91_%E6%AF%94%E7%89%B9%E7%BD%91_files/copymsg.js"></script>
+
+                   </body></html>
