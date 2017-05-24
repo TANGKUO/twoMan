@@ -1,0 +1,133 @@
+package com.iec.web.utils;
+
+public class PageUtil {
+
+	// 分页信息
+	private int currentpage;// 当前页
+	private int countrecord;// 总记录
+	private int countpage;// 总页数
+	private int pageSize;// 每页显示的记录数
+	private int startpage;// 页面中的起始页
+	private int endpage;// 页面中的结束页
+	
+	
+	private int SHOWPAGE = 12;// 页面中显示的总页数 baidu,google显示的总页数是20
+	// 在测试我们才用6来测试
+	private String url;
+
+
+	/** 根据当前页及总记录数来构造分页对象 */
+	public PageUtil(int currentpage, int countrecord, int pageSize,String url) {
+		this.currentpage = currentpage;
+		this.countrecord = countrecord;
+		this.pageSize = pageSize;
+		this.url=url;
+
+		/** 计算总页数 */
+		this.countpage = this.countrecord % this.pageSize == 0 ? this.countrecord
+				/ this.pageSize
+				: this.countrecord / this.pageSize + 1;
+
+		/** 计算startpage与endpage的值 */
+
+		/** 总页数数是否小于6 */
+		if (this.countpage < (this.SHOWPAGE / 2 + 1)) {
+			this.startpage = 1; // 页面中起始页就是1
+			this.endpage = this.countpage;// 页面中的最终页就是总页数
+		} else {
+			/** else中是总页数大于6的情况 */
+
+			/** 首先当前页的值是否小于等于6 */
+			if (this.currentpage <= (this.SHOWPAGE / 2 + 1)) {
+				this.startpage = 1;
+				this.endpage = this.currentpage + 6;
+
+				/** 判断页面的最终页是否大于总页数 */
+				if (this.endpage >= this.countpage) {
+					this.endpage = this.countpage;
+				}
+			} else {
+				this.startpage = this.currentpage - 6;
+				this.endpage = this.currentpage + 5;
+
+				if (this.endpage >= this.countpage) {
+					this.endpage = this.countpage;
+					if (this.countpage < this.SHOWPAGE) {
+						this.startpage = 1;
+					} else {
+						this.startpage = this.endpage - 11;
+					}
+
+				}
+			}
+		}
+	}
+
+	
+	public int getCurrentpage() {
+		return currentpage;
+	}
+
+
+	public void setCurrentpage(int currentpage) {
+		this.currentpage = currentpage;
+	}
+
+
+	public int getCountrecord() {
+		return countrecord;
+	}
+
+	public void setCountrecord(int countrecord) {
+		this.countrecord = countrecord;
+	}
+
+	public int getCountpage() {
+		return countpage;
+	}
+
+	public void setCountpage(int countpage) {
+		this.countpage = countpage;
+	}
+
+	public int getPageSize() {
+		return pageSize;
+	}
+
+	public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
+	}
+
+	public int getStartpage() {
+		return startpage;
+	}
+
+	public void setStartpage(int startpage) {
+		this.startpage = startpage;
+	}
+
+	public int getEndpage() {
+		return endpage;
+	}
+
+	public void setEndpage(int endpage) {
+		this.endpage = endpage;
+	}
+
+	public int getSHOWPAGE() {
+		return SHOWPAGE;
+	}
+
+	public void setSHOWPAGE(int sHOWPAGE) {
+		SHOWPAGE = sHOWPAGE;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+}
