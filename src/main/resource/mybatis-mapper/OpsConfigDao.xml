@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tk.config.center.dao.OpsConfigDao" >
+		
+	<resultMap type="com.tk.config.center.entity.OpsConfig" id="opsConfig">
+	  	<id property="id" column="id"/>
+        <result property="key" column="key" />
+        <result property="code" column="code" />
+        <result property="desc" column="describe" />
+		<result property="value" column="value"/>
+	</resultMap>
+	
+	<sql id="opsConfigColumn">
+		a.id,a.key,a.code,a.describe,a.value
+	</sql>
+	
+	<select id="findByKey" parameterType="com.tk.config.center.entity.OpsConfig">
+			select 
+			<include refid="opsConfigColumn"></include> 
+			from con_opsconfig
+			where key = #{key}
+	</select>
+	
+</mapper>

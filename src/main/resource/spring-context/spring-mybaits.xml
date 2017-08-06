@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<beans xmlns="http://www.springframework.org/schema/beans"  
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+       xmlns:context="http://www.springframework.org/schema/context"  
+       xmlns:tx="http://www.springframework.org/schema/tx"  
+       xmlns:p="http://www.springframework.org/schema/p"  
+       xsi:schemaLocation="http://www.springframework.org/schema/beans  
+       http://www.springframework.org/schema/beans/spring-beans.xsd  
+       http://www.springframework.org/schema/context  
+       http://www.springframework.org/schema/context/spring-context.xsd  
+       http://www.springframework.org/schema/tx  
+       http://www.springframework.org/schema/tx/spring-tx-4.3.xsd  
+       ">  
+  
+    <!-- 引入jdbc配置文件 -->  
+    <context:property-placeholder location="classpath:app.properties"/>  
+  
+    <!-- 数据源配置 -->  
+     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+    	<property name="driverClass"><value>${jdbc.pool.driverClass}</value></property>
+    	<property name="jdbcUrl"><value>${jdbc.url}</value></property>               
+    	<property name="user"><value>${jdbc.user}</value></property>
+    	<property name="password"><value>${jdbc.pwd}</value></property> 	
+    	<property name="minPoolSize"><value>${jdbc.pool.minPoolSize}</value></property>
+    	<property name="maxPoolSize"><value>${jdbc.pool.maxPoolSize}</value></property>
+    	<property name="maxIdleTime"><value>${jdbc.pool.maxIdleTime}</value></property>
+    	<property name="acquireIncrement"><value>${jdbc.pool.acquireIncrement}</value></property>
+    	<property name="initialPoolSize"><value>${jdbc.pool.initialPoolSize}</value></property>
+    	<property name="idleConnectionTestPeriod"><value>${jdbc.pool.idleConnectionTestPeriod}</value></property>
+    	<property name="acquireRetryAttempts"><value>30</value></property>
+    	<property name="maxStatements"><value>0</value></property>
+    	<property name="breakAfterAcquireFailure"><value>false</value></property>
+    	<property name="testConnectionOnCheckout"><value>false</value></property>
+    </bean> 
+  
+    <!-- mybatis文件配置，扫描所有mapper文件 -->  
+    <!-- configLocation为mybatis属性 mapperLocations为所有mapper-->  
+    <bean id="sqlSessionFactory"  
+          class="org.mybatis.spring.SqlSessionFactoryBean"  
+          p:dataSource-ref="dataSource"  
+          p:configLocation="classpath:spring-context/mybatis-config.xml"  
+          p:mapperLocations="classpath:mybatis-mapper/*Dao.xml"  
+    />  
+  
+    <!-- 定义SqlSessionTemplate组件来整合spring和mybatis -->  
+    <bean id="sqlSessionTemplate"  
+          class="org.mybatis.spring.SqlSessionTemplate">  
+        <constructor-arg index="0" ref="sqlSessionFactory" />  
+        <constructor-arg index="1" value="BATCH" />  
+    </bean>  
+  
+    <bean id="transactionManager"  
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">  
+        <property name="dataSource" ref="dataSource" />  
+    </bean>  
+    <!-- 使用annotation注解方式配置事务 -->  
+    <tx:annotation-driven transaction-manager="transactionManager"/>  
+</beans>  
